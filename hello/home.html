@@ -943,3 +943,14 @@
   </script>
 </body>
 </html>
+
+<script>
+    // Load progress on page load
+    window.onload = function () {
+      const savedProgress = loadProgress();
+      if (savedProgress) {
+        console.log('Restored progress:', savedProgress);
+        // Update the UI with the loaded progress
+      }
+    };
+  </script>
