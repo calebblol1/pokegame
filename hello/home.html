@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-
-
-  
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Pokemon Game (Offline Simulation)</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Ensure this path is correct -->
   <style>
     /* Styles for team selection grid */
     #pokemon-selection {
@@ -124,10 +120,10 @@
   </header>
   
   <!-- Audio elements for lootbox unboxing and duplicate sale sound effects -->
-  <audio id="unbox-audio" src="open.mp3" preload="auto"></audio>
-  <audio id="unbox-rare-audio" src="open.mp3" preload="auto"></audio>
-  <audio id="unbox-epic-audio" src="open.mp3" preload="auto"></audio>
-  <audio id="duplicate-audio" src="open.mp3" preload="auto"></audio>
+  
+  <main>
+    <!-- Dashboard -->
+    <div id="dashboard-container" class="section">
   
   <main>
     <!-- Dashboard -->
@@ -526,10 +522,42 @@
       return pokemonMoveSets[pokemon.name] || defaultMoves;
     }
     
-    // Update balance display
+    // Save progress to localStorage
+    function saveProgress() {
+      const progress = {
+        userCollection,
+        userTeam,
+        balance: currentUser.balance,
+      };
+      console.log('Saving progress:', progress); // Debugging log
+      localStorage.setItem('pokemonGameProgress', JSON.stringify(progress));
+    }
+
+    // Load progress from localStorage
+    function loadProgress() {
+      const savedProgress = localStorage.getItem('pokemonGameProgress');
+      console.log('Loading progress from localStorage:', savedProgress); // Debugging log
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        userCollection = progress.userCollection || [];
+        userTeam = progress.userTeam || [];
+        currentUser.balance = progress.balance || 100;
+
+        // Update the UI with the loaded progress
+        updateBalance(currentUser.balance);
+        loadCollection();
+        populateTeamSelection();
+        console.log('Progress loaded:', progress); // Debugging log
+      } else {
+        console.log('No saved progress found.');
+      }
+    }
+
+    // Update balance and save progress
     function updateBalance(newBalance) {
       currentUser.balance = newBalance;
       document.getElementById('balance').textContent = newBalance;
+      saveProgress(); // Save progress after updating balance
     }
     
     // Load lootboxes
@@ -554,18 +582,9 @@
       return 5;
     }
     
-    // Play unboxing sound including an online sound effect
+    // Remove the playUnboxingSound function
     function playUnboxingSound(price) {
-      if (price < 100) {
-        document.getElementById('unbox-audio').play();
-      } else if (price < 500) {
-        document.getElementById('unbox-rare-audio').play();
-      } else {
-        document.getElementById('unbox-epic-audio').play();
-      }
-      // Play online sound effect from an external URL
-      const lootboxOnlineSound = new Audio('https://www.myinstants.com/media/sounds/looteffect.mp3');
-      lootboxOnlineSound.play();
+      // Function removed since audio is not needed
     }
     
     // Generate a random Gen 1 Pokemon
@@ -590,7 +609,6 @@
         return;
       }
       currentUser.balance -= lootbox.price;
-      playUnboxingSound(lootbox.price);
       const count = getPokemonCount(lootbox.price);
       let obtained = [];
       let messages = [];
@@ -602,11 +620,12 @@
           let sellValue = newPokemon.rarity === "Rare" ? 10 : 2;
           currentUser.balance += sellValue;
           messages.push(`Duplicate ${newPokemon.name} sold for $${sellValue}`);
-          // Play duplicate sale sound effect
-          document.getElementById("duplicate-audio").play();
+          // Remove the audio playback
+          // document.getElementById("duplicate-audio").play();
         } else {
           userCollection.push(newPokemon);
           obtained.push(newPokemon);
+          saveProgress(); // Save progress after adding Pokémon
         }
       }
       updateBalance(currentUser.balance);
@@ -654,13 +673,14 @@
             userTeam = userTeam.filter(name => name !== pokemon.name);
           } else {
             if (userTeam.length >= 6) {
-              alert('You can only select up to 6 Pokemon for your team.');
+              alert('You can only select up to 6 Pokémon for your team.');
               return;
             }
             card.classList.add('selected');
             userTeam.push(pokemon.name);
           }
           updateSelectedTeamDisplay();
+          saveProgress(); // Save progress after updating the team
         });
         container.appendChild(card);
       });
@@ -940,54 +960,14 @@
     document.getElementById('toggle-collection').addEventListener('click', toggleCollectionVisibility);
     document.getElementById('team-search').addEventListener('input', populateTeamSelection);
     document.getElementById('battle-btn').addEventListener('click', battle);
-
-
-    // Save progress to localStorage
-function saveProgress() {
-  const progress = {
-    userCollection,
-    userTeam,
-    balance: currentUser.balance,
-  };
-  localStorage.setItem('pokemonGameProgress', JSON.stringify(progress));
-  console.log('Progress saved:', progress);
-}
-
-// Load progress from localStorage
-function loadProgress() {
-  const savedProgress = localStorage.getItem('pokemonGameProgress');
-  if (savedProgress) {
-    const progress = JSON.parse(savedProgress);
-    userCollection = progress.userCollection || [];
-    userTeam = progress.userTeam || [];
-    currentUser.balance = progress.balance || 100;
-    console.log('Progress loaded:', progress);
-  }
-}
-
-// Update balance and save progress
-function updateBalance(newBalance) {
-  currentUser.balance = newBalance;
-  document.getElementById('balance').textContent = newBalance;
-  saveProgress();
-}
-
-// Example: Save progress when a Pokémon is added to the collection
-function purchaseLootbox(lootboxId) {
-  // ...existing code...
-  userCollection.push(newPokemon);
-  saveProgress();
-}
-
-// Load progress on page load
-window.onload = function () {
-  loadProgress();
-  updateBalance(currentUser.balance);
-  loadCollection();
-  populateTeamSelection();
-};
-
+    
+    // Load progress on page load
+    window.onload = function () {
+      console.log('Page loaded. Loading progress...');
+      loadProgress(); // Load progress from localStorage
+      loadCollection();
+      populateTeamSelection();
+    };
   </script>
 </body>
 </html>
-
