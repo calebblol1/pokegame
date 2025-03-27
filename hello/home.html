@@ -940,17 +940,54 @@
     document.getElementById('toggle-collection').addEventListener('click', toggleCollectionVisibility);
     document.getElementById('team-search').addEventListener('input', populateTeamSelection);
     document.getElementById('battle-btn').addEventListener('click', battle);
+
+
+    // Save progress to localStorage
+function saveProgress() {
+  const progress = {
+    userCollection,
+    userTeam,
+    balance: currentUser.balance,
+  };
+  localStorage.setItem('pokemonGameProgress', JSON.stringify(progress));
+  console.log('Progress saved:', progress);
+}
+
+// Load progress from localStorage
+function loadProgress() {
+  const savedProgress = localStorage.getItem('pokemonGameProgress');
+  if (savedProgress) {
+    const progress = JSON.parse(savedProgress);
+    userCollection = progress.userCollection || [];
+    userTeam = progress.userTeam || [];
+    currentUser.balance = progress.balance || 100;
+    console.log('Progress loaded:', progress);
+  }
+}
+
+// Update balance and save progress
+function updateBalance(newBalance) {
+  currentUser.balance = newBalance;
+  document.getElementById('balance').textContent = newBalance;
+  saveProgress();
+}
+
+// Example: Save progress when a Pokémon is added to the collection
+function purchaseLootbox(lootboxId) {
+  // ...existing code...
+  userCollection.push(newPokemon);
+  saveProgress();
+}
+
+// Load progress on page load
+window.onload = function () {
+  loadProgress();
+  updateBalance(currentUser.balance);
+  loadCollection();
+  populateTeamSelection();
+};
+
   </script>
 </body>
 </html>
 
-<script>
-    // Load progress on page load
-    window.onload = function () {
-      const savedProgress = loadProgress();
-      if (savedProgress) {
-        console.log('Restored progress:', savedProgress);
-        // Update the UI with the loaded progress
-      }
-    };
-  </script>
