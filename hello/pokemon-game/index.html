@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Pokemon Game</h1>
+    </header>
+    <main>
+        <div id="dashboard-container">
+            <h2>Dashboard</h2>
+            <p><strong>User:</strong> <span id="username">Player</span></p>
+            <p><strong>Balance:</strong> $<span id="balance">100</span></p>
+        </div>
+
+        <div class="section">
+            <h3>Available Lootboxes</h3>
+            <div id="lootboxes"></div>
+            <div id="purchase-result" class="result-message" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>Your Pokemon Collection</h3>
+            <button id="load-pokemon">Refresh Collection</button>
+            <ul id="collection"></ul>
+        </div>
+
+        <div class="section">
+            <h3>Team Selection (Up to 6 Pokemon)</h3>
+            <input type="text" id="team-search" placeholder="Search Pokemon in team..." />
+            <div id="pokemon-selection"></div>
+            <div id="selected-team"></div>
+        </div>
+
+        <div class="section">
+            <h3>Battle Simulation</h3>
+            <button id="battle-btn">Fight Battle</button>
+            <div id="battle-result" class="result-message" style="display: none;"></div>
+        </div>
+    </main>
+
+    <audio id="unbox-audio" src="assets/sounds/open.mp3" preload="auto"></audio>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
